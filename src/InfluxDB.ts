@@ -1,7 +1,7 @@
 import { Point } from "@influxdata/influxdb-client";
 import getInfluxDBClient from "./client/client";
 
-type WriteDataType = {
+export type WriteDataType = {
   tag: { [key: string]: string };
   timestamp?: string | number | Date | undefined;
   data: { [key: string]: string };
