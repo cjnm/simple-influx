@@ -92,4 +92,63 @@ export default class InfluxLib {
       console.log("WRITE FINISHED");
     });
   }
+
+  read(
+    measurement: string,
+    fields: string[],
+    searchStartTime: string,
+    searchEndTime?: string
+  ) {
+    /**
+     * Create a Flux query for your InfluxDB bucket. Store the query as a string variable.
+     **/
+    let fluxQuery = `from(bucket:"${this.bucket}") `;
+
+    // search with time range.
+    if (searchStartTime && searchEndTime) {
+      fluxQuery += `|> range(start: ${searchStartTime}, stop: ${searchEndTime}) `;
+    } else if (searchStartTime) {
+      fluxQuery += `|> range(start: ${searchStartTime}) `;
+    } else if (searchEndTime) {
+      fluxQuery += `|> range(stop: ${searchEndTime}) `;
+    }
+
+    // filter fields
+    let fieldsFilterQuery = "";
+    if (fields.length) {
+      for (const field of fields) {
+        if (field[0] === "!") {
+          fieldsFilterQuery += ` and r._field != "${field.substring(1)}"`;
+        } else {
+          fieldsFilterQuery += ` and r._field == "${field}"`;
+        }
+      }
+    }
+
+    fluxQuery += `|> filter(fn: (r) => r._measurement == "${measurement}" ${fieldsFilterQuery})`;
+
+    this.readWithFluxQuery(fluxQuery);
+  }
+
+  readWithFluxQuery(fluxQuery: string) {
+    console.log(fluxQuery);
+    const queryApi = this.client.getQueryApi(this.organization);
+
+    const fluxObserver = {
+      next(row: any, tableMeta: any) {
+        const o = tableMeta.toObject(row);
+        console.log(o);
+      },
+      error(error: any) {
+        console.error(error);
+        console.log("\nFinished with ERROR");
+      },
+      complete(data: any) {
+        console.log("\nFinished with SUCCESS", data);
+      },
+    };
+
+    /** Execute a query and receive line table metadata and rows. */
+    queryApi.queryRows(fluxQuery, fluxObserver);
+  }
 }

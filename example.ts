@@ -2,7 +2,7 @@ import InfluxLib, { WriteDataType } from "./index";
 
 let influx = new InfluxLib(
   "http://localhost:8086",
-  "", // token
+  "==", // token
   "", // organization
   "" //bucket
 );
@@ -29,3 +29,5 @@ let data: WriteDataType = [
 ];
 
 influx.write("server_metrix", data);
+
+influx.read("server_metrix", ["!memory", "cpu"], "-1h");
