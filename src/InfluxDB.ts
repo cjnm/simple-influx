@@ -127,28 +127,31 @@ export default class InfluxLib {
 
     fluxQuery += `|> filter(fn: (r) => r._measurement == "${measurement}" ${fieldsFilterQuery})`;
 
-    this.readWithFluxQuery(fluxQuery);
+    return this.readWithFluxQuery(fluxQuery);
   }
 
   readWithFluxQuery(fluxQuery: string) {
-    console.log(fluxQuery);
     const queryApi = this.client.getQueryApi(this.organization);
 
-    const fluxObserver = {
-      next(row: any, tableMeta: any) {
-        const o = tableMeta.toObject(row);
-        console.log(o);
-      },
-      error(error: any) {
-        console.error(error);
-        console.log("\nFinished with ERROR");
-      },
-      complete(data: any) {
-        console.log("\nFinished with SUCCESS", data);
-      },
-    };
+    return queryApi
+      .collectRows(
+        fluxQuery /*, you can specify a row mapper as a second arg */
+      )
+      .then((data: any) => {
+        let collected_row: string[] = [];
+        data.forEach((datum: any) => collected_row.push(datum));
 
-    /** Execute a query and receive line table metadata and rows. */
-    queryApi.queryRows(fluxQuery, fluxObserver);
+        return {
+          success: true,
+          data: collected_row,
+        };
+      })
+      .catch((error: any) => {
+        return {
+          success: false,
+          message: error.message,
+          data: [],
+        };
+      });
   }
 }
