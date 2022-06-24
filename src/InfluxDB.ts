@@ -14,6 +14,12 @@ export default class InfluxLib {
   private bucket: string;
   private client: any;
 
+  /**
+   * @param  {string} url - InfluxDB API URL.
+   * @param  {string} token - InfluxDB auth token.
+   * @param  {string} organization - InfluxDB organization.
+   * @param  {string} bucket - InfluxDB bucket.
+   */
   constructor(
     url: string,
     token: string,
@@ -31,7 +37,11 @@ export default class InfluxLib {
 
     this.client = getInfluxDBClient(this.url, this.token);
   }
-
+  /**
+   * @param  {string} measurement - InfluxDB measurement.
+   * @param  {WriteDataType} data - Data to be saved.
+   * @param  {{[key:string]:string;}} default_tags? - default tags for all data points (everything) inserted.
+   */
   write(
     measurement: string,
     data: WriteDataType,
@@ -92,7 +102,13 @@ export default class InfluxLib {
       console.log("WRITE FINISHED");
     });
   }
-
+  /**
+   * @param  {string} measurement - InfluxDB measurement.
+   * @param  {string[]} fields - Fields to be used to filter the row. Rows without fields will be excluded. Can add a `!` before
+   *  fieldname to exclude rows with field. example: ['user', '!email'] => only includes rows containing users field but not containing email field.
+   * @param  {string} searchStartTime - Start time for data. Accepts all values accepted by InfluxDb client.
+   * @param  {string} searchEndTime? - End time for data. Accepts all values accepted by InfluxDb client.
+   */
   read(
     measurement: string,
     fields: string[],
@@ -129,7 +145,9 @@ export default class InfluxLib {
 
     return this.readWithFluxQuery(fluxQuery);
   }
-
+  /**
+   * @param  {string} fluxQuery - FluxQuery String.
+   */
   readWithFluxQuery(fluxQuery: string) {
     const queryApi = this.client.getQueryApi(this.organization);
 
