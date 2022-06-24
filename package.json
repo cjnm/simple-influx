@@ -1,0 +1,19 @@
+{
+  "name": "influx-lib",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.0.0"
+  },
+  "dependencies": {
+    "@influxdata/influxdb-client": "^1.27.0",
+    "@influxdata/influxdb-client-apis": "^1.27.0"
+  }
+}
