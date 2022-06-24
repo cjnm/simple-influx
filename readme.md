@@ -15,6 +15,16 @@ let influx = new InfluxLib(
 
 # Features
 
+## write()
+
+```js
+influx.write(
+    measurement: string,
+    data: WriteDataType,
+    default_tags? : { [key: string]: string } | undefined
+    ): void
+```
+
 #### Parameters
 
 #### measurement: string
@@ -29,17 +39,16 @@ let influx = new InfluxLib(
 
 - Default tags for all data points (everything) inserted.
 
-## write()
+## read()
 
 ```js
-influx.write(
+influx.read(
     measurement: string,
-    data: WriteDataType,
-    default_tags? : { [key: string]: string } | undefined
-    ): void
+    fields: string[],
+    searchStartTime: string,
+    searchEndTime?: string | undefined
+    ): any
 ```
-
-## read()
 
 #### Parameters
 
@@ -59,25 +68,16 @@ influx.write(
 
 - End time for data. Accepts all values accepted by InfluxDb client.
 
-```js
-influx.read(
-    measurement: string,
-    fields: string[],
-    searchStartTime: string,
-    searchEndTime?: string | undefined
-    ): any
-```
-
 ## readWithFluxQuery()
-
-#### Parameters
-
-#### fluxQuery: string
-
-- FluxQuery String.
 
 ```js
 influx.readWithFluxQuery(
    fluxQuery: string
     ): any
 ```
+
+#### Parameters
+
+#### fluxQuery: string
+
+- FluxQuery String.
